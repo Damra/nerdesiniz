@@ -81,19 +81,19 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     @BindView(R.id.clMain)
-    ConstraintLayout clMain;
+    private ConstraintLayout clMain;
 
     @BindView(R.id.etUserName)
-    EditText etUserName;
+    private EditText etUserName;
 
     @BindView(R.id.etRoomNumber)
-    EditText etRoomNumber;
+    private EditText etRoomNumber;
 
     @BindView(R.id.rgColor)
-    RadioGroup rgColor;
+    private RadioGroup rgColor;
 
     @BindView(R.id.btnSubmit)
-    Button btnSubmit;
+    private Button btnSubmit;
 
     @OnClick(R.id.btnSubmit)
     public void doLogin(){
