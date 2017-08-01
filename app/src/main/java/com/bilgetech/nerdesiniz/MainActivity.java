@@ -81,19 +81,19 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     @BindView(R.id.clMain)
-    private ConstraintLayout clMain;
+    public ConstraintLayout clMain;
 
     @BindView(R.id.etUserName)
-    private EditText etUserName;
+    public EditText etUserName;
 
     @BindView(R.id.etRoomNumber)
-    private EditText etRoomNumber;
+    public EditText etRoomNumber;
 
     @BindView(R.id.rgColor)
-    private RadioGroup rgColor;
+    public RadioGroup rgColor;
 
     @BindView(R.id.btnSubmit)
-    private Button btnSubmit;
+    public Button btnSubmit;
 
     @OnClick(R.id.btnSubmit)
     public void doLogin(){
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity  {
         person.setColor(absActivity.getHexColor());
         person.setName(etUserName.getText().toString());
 
-        BTFirebase.getRooms().child(etRoomNumber.getText().toString()).push()
+        BTFirebase.getRoom(etRoomNumber.getText().toString()).push()
             .setValue(person);
 
 
