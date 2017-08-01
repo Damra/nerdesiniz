@@ -470,12 +470,18 @@ public abstract class LocationAwareActivity extends ActionBarActivity implements
     public String getDistance(final double lat1, final double lon1, final double lat2, final double lon2){
         final String[] parsedDistance = new String[1];
         final String[] response = new String[1];
-        Thread thread=new Thread(new Runnable() {
+
+        Log.d(TAG, "getDistance: "+"http://maps.googleapis.com/maps/api/directions/json?origin=" + lat1 + "," + lon1 + "&destination=" + lat2 + "," + lon2 + "&sensor=false&units=metric&mode=driving");
+
+        Thread thread= new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
 
                     URL url = new URL("http://maps.googleapis.com/maps/api/directions/json?origin=" + lat1 + "," + lon1 + "&destination=" + lat2 + "," + lon2 + "&sensor=false&units=metric&mode=driving");
+
+                    Log.d(TAG, "Thread run: "+"http://maps.googleapis.com/maps/api/directions/json?origin=" + lat1 + "," + lon1 + "&destination=" + lat2 + "," + lon2 + "&sensor=false&units=metric&mode=driving");
+
                     final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("POST");
                     InputStream in = new BufferedInputStream(conn.getInputStream());
@@ -500,12 +506,15 @@ public abstract class LocationAwareActivity extends ActionBarActivity implements
                 }
             }
         });
+
         thread.start();
+
         try {
             thread.join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.d(TAG, "getDistance: ",e);
         }
+
         return parsedDistance[0];
     }
 

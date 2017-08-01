@@ -168,6 +168,9 @@ public class MapActivity extends LocationAwareActivity implements
 
         mMap.setOnMyLocationButtonClickListener(this);
 
+        mMap.setOnMarkerClickListener(this);
+
+
         onEnableLocation();
 
         childEventListener();
@@ -319,6 +322,8 @@ public class MapActivity extends LocationAwareActivity implements
                 marker.setPosition(markerOptions.getPosition());
 
         }
+
+
     }
 
     private void removeMarker(final String deviceId) {
@@ -415,7 +420,12 @@ public class MapActivity extends LocationAwareActivity implements
 
         mLastSelectedMarker = marker;
 
-        if(mLastLocation!=null){
+        Log.d(TAG, "onMarkerClick: ");
+
+        if(marker!=null){
+
+            Log.d(TAG, "onMarkerClick: "+mLastLocation.getLongitude());
+            Log.d(TAG, "onMarkerClick: "+mLastLocation.getLatitude());
 
             final String distance = getDistance(
                     mLastLocation.getLatitude(),mLastLocation.getLatitude(),
