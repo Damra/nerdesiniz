@@ -215,7 +215,6 @@ public class MapActivity extends LocationAwareActivity implements
 
                 }
 
-
             }
 
             @Override
@@ -250,10 +249,13 @@ public class MapActivity extends LocationAwareActivity implements
 
                 try{
 
-                    Person person = dataSnapshot.getValue(Person.class);
+                    Log.d(TAG, "onChildRemoved: "+dataSnapshot.getValue());
 
-                    if (person!=null && person.getDeviceId()!=null)
-                        removeMarker(person.getDeviceId());
+                    String deviceId = dataSnapshot.getRef().child("deviceId").toString();
+
+                    if (deviceId!=null)
+                        removeMarker(deviceId);
+
 
                 }catch (Exception e){
 
@@ -276,7 +278,39 @@ public class MapActivity extends LocationAwareActivity implements
 
     }
 
-    private void addMarker(final String deviceId,final MarkerOptions markerOptions) {
+    @Override
+    protected void onPause() {
+
+        BTFirebase.dropUserFromRoom(roomNumber, DeviceInfo.getUDID(this));
+
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Person person = new Person();
+
+        if(mLastLocation!=null){
+
+            person.setLocation(new com.bilgetech.nerdesiniz.Location());
+
+            person.getLocation().setLongitude(mLastLocation.getLongitude());
+            person.getLocation().setLatitude(mLastLocation.getLatitude());
+
+            person.setColor(absActivity.getHexColor());
+            person.setName(userName);
+            person.setCompleted(true);
+
+            BTFirebase.registerUserToRoom(roomNumber,person);
+
+        }
+
+    }
+
+    private void addMarker(final String deviceId, final MarkerOptions markerOptions) {
 
         Marker marker;
 
@@ -304,14 +338,7 @@ public class MapActivity extends LocationAwareActivity implements
 
             mMarkers.remove(deviceId);
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    marker.remove();
-
-                }
-            });
+            marker.remove();
 
         }
 
