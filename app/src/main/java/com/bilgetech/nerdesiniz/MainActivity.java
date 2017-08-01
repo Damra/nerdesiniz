@@ -120,9 +120,7 @@ public class MainActivity extends AppCompatActivity  {
         person.setColor(absActivity.getHexColor());
         person.setName(etUserName.getText().toString());
 
-        BTFirebase.getRoom(etRoomNumber.getText().toString()).push()
-            .setValue(person);
-
+        BTFirebase.registerUserToRoom(etRoomNumber.getText().toString(),person);
 
         createActivity();
 

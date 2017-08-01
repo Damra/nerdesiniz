@@ -184,6 +184,7 @@ public class MapActivity extends LocationAwareActivity implements
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+
                 try {
 
                     for (DataSnapshot ds: dataSnapshot.getChildren()) {
@@ -199,9 +200,15 @@ public class MapActivity extends LocationAwareActivity implements
 
                             MarkerOptions options = new MarkerOptions()
                                     .position(newLocation)
-                                    .icon(getMarkerIcon(person.getColor()))
+                                    .icon(BitmapDescriptorFactory.defaultMarker())
                                     .title(person.getName());
 
+
+                            if (person.getColor().matches("^[0-9a-fA-F]+$")){
+
+                                options.icon(getMarkerIcon(person.getColor()));
+
+                            }
 
                             addMarker(person.getDeviceId(),options);
 
@@ -209,9 +216,14 @@ public class MapActivity extends LocationAwareActivity implements
 
                     }
 
-                }catch (Exception e){
+                } catch (IllegalArgumentException e) {
+
+
+                } catch (Exception e){
 
                     Log.d(TAG, "onDataChange: ",e);
+
+                } finally {
 
                 }
 
@@ -287,28 +299,7 @@ public class MapActivity extends LocationAwareActivity implements
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
 
-        Person person = new Person();
-
-        if(mLastLocation!=null){
-
-            person.setLocation(new com.bilgetech.nerdesiniz.Location());
-
-            person.getLocation().setLongitude(mLastLocation.getLongitude());
-            person.getLocation().setLatitude(mLastLocation.getLatitude());
-
-            person.setColor(absActivity.getHexColor());
-            person.setName(userName);
-            person.setCompleted(true);
-
-            BTFirebase.registerUserToRoom(roomNumber,person);
-
-        }
-
-    }
 
     private void addMarker(final String deviceId, final MarkerOptions markerOptions) {
 
@@ -363,9 +354,15 @@ public class MapActivity extends LocationAwareActivity implements
                         .position(newLocation)
                         .title(person.getName());
 
-                if (person.getColor().getClass().isInstance(String.class)) {
 
-                    markerOptions.icon(getMarkerIcon(person.getColor()));
+                MarkerOptions options = new MarkerOptions()
+                        .position(newLocation)
+                        .icon(BitmapDescriptorFactory.defaultMarker())
+                        .title(person.getName());
+
+                if (person.getColor().matches("^[0-9a-fA-F]+$")){
+
+                    options.icon(getMarkerIcon(person.getColor()));
 
                 }
 

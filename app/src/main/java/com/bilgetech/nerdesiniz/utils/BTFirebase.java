@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
+import com.bilgetech.nerdesiniz.Person;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -87,6 +88,51 @@ public class BTFirebase {
     public static DatabaseReference getRoom(String roomNumber){
 
         return database.getReference(KEY_ROOMS).child(roomNumber);
+
+    }
+
+    public static void registerUserToRoom(String roomNumber, Person person){
+
+        Log.d(TAG, "registerUserToRoom: roomNumber:"+roomNumber+":"+ person.getDeviceId());
+
+        BTFirebase.getRoom(roomNumber).push().setValue(person);
+
+    }
+
+    public static void dropUserFromRoom(final String roomNumber, final String deviceId){
+
+        Query filteredData = BTFirebase.getRoom(roomNumber).orderByChild("deviceId").equalTo(deviceId);
+
+        filteredData.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                try{
+
+                    logdRefRec(dataSnapshot.getRef()); // filtered data
+
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+
+                        snapshot.getRef().removeValue();
+
+                        Log.d(TAG, "registerUserToRoom: roomNumber:"+roomNumber+":"+ deviceId);
+
+                    }
+
+                }catch (Exception e){
+
+                    Log.d(TAG, "onDataChange: ",e);
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: "+databaseError.getMessage());
+            }
+
+        });
 
     }
 
