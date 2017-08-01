@@ -19,12 +19,13 @@ import com.bilgetech.nerdesiniz.utils.SessionManager;
 
 abstract class AbsActivity {
 
-    final AppCompatActivity activity;
-    final Context context;
+    private final AppCompatActivity activity;
 
-    int themeId;
-    int themeColor;
-    String hexColor;
+    private final Context context;
+
+    private int themeId;
+    private int themeColor;
+    private String hexColor;
 
     abstract void loadPropertyData();
 

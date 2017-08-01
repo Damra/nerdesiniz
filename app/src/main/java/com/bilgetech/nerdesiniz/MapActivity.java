@@ -53,7 +53,6 @@ public class MapActivity extends LocationAwareActivity implements
     private AbsActivity absActivity; // theme
     private String roomNumber = "";
     private String userName = "";
-    private int themeColor;
 
 
     /**
@@ -70,7 +69,6 @@ public class MapActivity extends LocationAwareActivity implements
      * Flag indicating whether a requested permission has been denied after returning in
      * {@link #onRequestPermissionsResult(int, String[], int[])}.
      */
-    private boolean mPermissionDenied = false;
 
     @Override
     protected void onEnableLocation() {
@@ -390,6 +388,8 @@ public class MapActivity extends LocationAwareActivity implements
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+
+        mLastSelectedMarker = marker;
 
         if(mLastLocation!=null){
 

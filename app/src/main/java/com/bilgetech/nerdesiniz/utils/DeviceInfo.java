@@ -1,14 +1,10 @@
 package com.bilgetech.nerdesiniz.utils;
 
 /**
- * Created by DamraKOC on 30.7.2017.
- */
-
-/**
  * Created by DamraKOC on 3.9.2016.
  */
 
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
@@ -63,7 +59,7 @@ public class DeviceInfo {
     }
 
     public static String getUDID(Context context) {
-        String udid = Secure.getString(context.getContentResolver(), "android_id");
+        @SuppressLint("HardwareIds") String udid = Secure.getString(context.getContentResolver(), "android_id");
         if(udid == null) {
             udid = "";
         }

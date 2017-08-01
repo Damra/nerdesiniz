@@ -78,47 +78,6 @@ public class MainActivity extends AppCompatActivity  {
 
         absActivity.loadPropertyData();
 
-        firebaseTest();
-
-    }
-
-    public void firebaseTest(){
-
-        ValueEventListener listener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                map2list((Map) dataSnapshot.getValue());
-                //formats the datasnapshot entries to strings
-
-                //makes the ListView realtime
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                System.out.println(databaseError.toException());
-                // ...
-            }
-        };
-
-        BTFirebase.getRooms().removeValue();
-        //FirebaseDatabase.getInstance().getReference().addValueEventListener(listener);
-        BTFirebase.getRooms().addValueEventListener(listener);
-
-    }
-
-    public void map2list(Map<String,Long> map){
-
-        if(map!=null && map.entrySet()!=null)
-
-        for (Map.Entry<String, Long> entry : map.entrySet()) {
-
-            Log.d(TAG, "map2list: "+entry.getKey() + ": " + entry.getValue());
-
-           // arr.add(d + ": " + value);
-        }
-
     }
 
     @BindView(R.id.clMain)

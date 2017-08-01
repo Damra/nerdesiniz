@@ -114,7 +114,6 @@ public class BTFirebase {
 
                     Log.d(TAG, "onDataChange: ",e);
 
-
                 }
 
             }
