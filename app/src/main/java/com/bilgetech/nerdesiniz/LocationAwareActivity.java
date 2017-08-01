@@ -84,7 +84,7 @@ public abstract class LocationAwareActivity extends ActionBarActivity implements
 
     protected boolean mUpdatesRequested;
 
-    private boolean mPermissionDenied = false;
+    public boolean mPermissionDenied = false;
 
     /*
      * Define a request code to send to Google Play services
@@ -218,8 +218,16 @@ public abstract class LocationAwareActivity extends ActionBarActivity implements
 
         if (PermissionUtils.isPermissionGranted(permissions, grantResults,
                android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-            // Enable the my location layer if the permission has been granted.
+
+            //showSnackbar("Enable the my location layer if the permission has been granted.");
+
+            // Connect the client.
+            buildGoogleApiClient();
+
+            mGoogleApiClient.connect();
+
             onEnableLocation();
+
         } else {
             // Display the missing permission error dialog when the fragments resume.
             mPermissionDenied = true;
@@ -235,7 +243,7 @@ public abstract class LocationAwareActivity extends ActionBarActivity implements
     @Override
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
-        //Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
 
         isConnected = true;
 
