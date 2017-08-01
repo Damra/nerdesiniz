@@ -1,3 +1,49 @@
 <resources>
     <string name="app_name">Nerdesiniz</string>
+    <string name="google_maps_key">AIzaSyDuM4Ru5mQmRakqB4GQGAP1DiTwEdNugu0</string>
+
+    <!-- login -->
+    <string name="str_app_name">Nerdesiniz?</string>
+    <string name="str_user_name">İsim</string>
+    <string name="str_room_number">Oda numarası</string>
+    <string name="str_login_button">GİRİŞ YAP</string>
+
+    <!-- login required -->
+    <string name="str_required_user_name">Bir kullanıcı adınız olmak zorunda </string>
+    <string name="str_required_room_number">Bir oda numaranız olmak zorunda </string>
+
+
+    <!-- Permissions    -->
+    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
+    <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings.</string>
+    <string name="permission_required_toast">Location permission is required for this app.</string>
+
+    <!-- Latitude, longitude format -->
+    <string name="latitude_longitude">%1$.8f, %2$.8f</string>
+    <string name="IO_Exception_getFromLocation">IO Exception in Geocoder.getFromLocation()</string>
+    <string name="illegal_argument_exception">Illegal arguments: Latitude %1$.8f Longitude %2$.8f </string>
+
+
+    <!-- Address format -->
+    <string name="address_output_string">%1$s %2$s %3$s</string>
+    <string name="no_address_found">No address found for location</string>
+
+
+    <!-- Service error messages -->
+    <string name="connection_error_code">Connection failure error code: %1$d</string>
+    <string name="connection_error_disabled">Google Play services is disabled</string>
+    <string name="connection_error_internal">An internal error occurred</string>
+    <string name="connection_error_invalid">The version of Google Play services on this device is not authentic</string>
+    <string name="connection_error_invalid_account">The specified account name is invalid</string>
+    <string name="connection_error_license_check_failed">The app is not licensed to the user</string>
+    <string name="connection_error_message">Connection failure error message: %1$s</string>
+    <string name="connection_error_misconfigured">The application is misconfigured</string>
+    <string name="connection_error_missing">Google Play services is missing</string>
+    <string name="connection_error_needs_resolution">Additional resolution is required</string>
+    <string name="connection_error_network">A network error occurred</string>
+    <string name="connection_error_outdated">Google Play services is out of date</string>
+    <string name="connection_error_sign_in_required">The user is not signed in</string>
+    <string name="connection_error_unknown">An unknown error occurred</string>
+
+
 </resources>
