@@ -12,6 +12,8 @@
     <string name="str_required_user_name">Bir kullanıcı adınız olmak zorunda </string>
     <string name="str_required_room_number">Bir oda numaranız olmak zorunda </string>
 
+    <!-- map -->
+    <string name="str_count">Count</string>
 
     <!-- Permissions    -->
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>

@@ -2,7 +2,6 @@ package com.bilgetech.nerdesiniz;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -24,14 +23,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,6 +44,7 @@ public class MapActivity extends LocationAwareActivity implements
         OnMapReadyCallback,
         ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleMap.OnMyLocationButtonClickListener,
+        GoogleMap.OnMarkerDragListener,
         GoogleMap.OnMarkerClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -91,13 +91,13 @@ public class MapActivity extends LocationAwareActivity implements
     }
 
     @Override
-    protected void onLocationUpdated(final Task<Location> location) {
-        //Log.d(TAG, "onLocationUpdated:"+ location.getLatitude() + ", " + location.getLongitude());
+    protected void onLocationUpdated(final Location location) {
+        Log.d(TAG, "onLocationUpdated:"+ location.getLongitude() + ", " + location.getLongitude());
 
         try {
 
-            if(location!=null && location.getResult()!=null)
-                handleNewLocation(location.getResult());
+            if(location!=null)
+                handleNewLocation(location);
 
         }catch (Exception e){
 
@@ -122,6 +122,10 @@ public class MapActivity extends LocationAwareActivity implements
     @BindView(R.id.tvDistance)
     TextView tvDistance;
 
+
+    @BindView(R.id.tvRoomUserCount)
+    TextView tvRoomUserCount;
+//*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,48 +189,32 @@ public class MapActivity extends LocationAwareActivity implements
 
         BTFirebase.getRoom(roomNumber)
                 .orderByChild("completed")
-                .equalTo(true).addValueEventListener(new ValueEventListener() {
+                .equalTo(true)
+                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-
                 try {
+
+                    String roomUserCount = String.format(Locale.US, "%s : %d", getString(R.string.str_count), dataSnapshot.getChildrenCount());
+
+                    tvRoomUserCount.setText(roomUserCount);
 
                     for (DataSnapshot ds: dataSnapshot.getChildren()) {
 
-                        Person person = ds.getValue(Person.class);
+                        BTFirebase.logdRefRec(ds.getRef());
 
-                        if (person!=null && person.isCompleted() && person.getLocation()!=null){
-
-                            LatLng newLocation = new LatLng(
-                                    person.getLocation().getLatitude(),
-                                    person.getLocation().getLongitude()
-                            );
-
-                            MarkerOptions options = new MarkerOptions()
-                                    .position(newLocation)
-                                    .icon(BitmapDescriptorFactory.defaultMarker())
-                                    .title(person.getName());
-
-
-                            if (person.getColor().matches("^[0-9a-fA-F]+$")){
-
-                                options.icon(getMarkerIcon(person.getColor()));
-
-                            }
-
-                            addMarker(person.getDeviceId(),options);
-
-                        }
+                        onMapNewUserInteraction(ds);
 
                     }
 
                 } catch (IllegalArgumentException e) {
 
+                    Log.d(TAG, "IllegalArgumentException: ",e);
 
                 } catch (Exception e){
 
-                    Log.d(TAG, "onDataChange: ",e);
+                    Log.d(TAG, "Exception: ",e);
 
                 } finally {
 
@@ -246,7 +234,8 @@ public class MapActivity extends LocationAwareActivity implements
 
         BTFirebase.getRoom(roomNumber)
                 .orderByChild("completed")
-                .equalTo(true).addChildEventListener(new ChildEventListener() {
+                .equalTo(true)
+                .addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
@@ -304,19 +293,37 @@ public class MapActivity extends LocationAwareActivity implements
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        Person person = new Person();
 
-    private void addMarker(final String deviceId, final MarkerOptions markerOptions) {
+        person.setDeviceId(DeviceInfo.getUDID(this));
+        person.setColor(absActivity.getHexColor());
+        person.setName(userName);
+
+        BTFirebase.registerUserToRoom(roomNumber,person);
+
+    }
+
+    private synchronized void addMarker(final String deviceId, final MarkerOptions markerOptions) {
 
         Marker marker;
 
+        Log.d(TAG, "addMarker: ");
+
         if(mMarkers.get(deviceId)==null){
+
+            Log.d(TAG, "addMarker: first init for "+ deviceId);
 
             marker = mMap.addMarker(markerOptions);
 
             mMarkers.put(deviceId, marker);
 
         }else{
+
+            Log.d(TAG, "addMarker: update for" + deviceId);
 
             marker = mMarkers.get(deviceId);
 
@@ -328,7 +335,7 @@ public class MapActivity extends LocationAwareActivity implements
 
     }
 
-    private void removeMarker(final String deviceId) {
+    private synchronized void removeMarker(final String deviceId) {
 
         if(mMarkers.get(deviceId)!=null){
 
@@ -342,25 +349,26 @@ public class MapActivity extends LocationAwareActivity implements
 
     }
 
-    private void onMapNewUserInteraction(DataSnapshot dataSnapshot) {
+    private synchronized void onMapNewUserInteraction(DataSnapshot ds) {
 
         try{
 
-            Person person = dataSnapshot.getValue(Person.class);
+            Gson gson = new Gson();
+            JsonElement jsonElement = gson.toJsonTree((Map)ds.getValue());
+            Person person = gson.fromJson(jsonElement, Person.class);
 
-            if(person!=null && person.isCompleted() && person.getLocation()!=null){
+            if(person.isCompleted() && person.getLocation()!=null){
 
                 LatLng newLocation = new LatLng(
                     person.getLocation().getLatitude(),
                     person.getLocation().getLongitude()
                 );
 
-                Log.d(TAG, "onChildAdded: "+person.isCompleted());
+                Log.d(TAG, "onMapNewUserInteraction: "+"  ,"+ person.getDeviceId()+" "+person.isCompleted());
 
                 MarkerOptions markerOptions = new MarkerOptions()
                         .position(newLocation)
                         .title(person.getName());
-
 
                 MarkerOptions options = new MarkerOptions()
                         .position(newLocation)
@@ -383,30 +391,20 @@ public class MapActivity extends LocationAwareActivity implements
         }
     }
 
-    private void handleNewLocation(final Location location) {
+    private synchronized void handleNewLocation(final Location location) {
 
         if(location==null) return;
 
         // Report to the firebase that the location was updated
-
         BTFirebase.setCurrentUserLocation(roomNumber,location);
 
-        BTFirebase.logdRefRec(BTFirebase.getRooms().getRef()); // log all room data
+        //BTFirebase.logdRefRec(BTFirebase.getRooms().getRef()); // log all room data
         BTFirebase.logdRefRec(BTFirebase.getRoom(roomNumber)); // log current room data
 
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        //LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-        String hexColor = Integer.toHexString(absActivity.getThemeColor());
-
-        MarkerOptions options = new MarkerOptions()
-                .position(latLng)
-                .icon(getMarkerIcon("#"+hexColor ))
-                .title(userName);
-
-        addMarker(DeviceInfo.getUDID(this),options);
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+       // mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        //mMap.animateCamera(CameraUpdateFactory.zoomTo(17));
 
     }
 
@@ -458,5 +456,22 @@ public class MapActivity extends LocationAwareActivity implements
         Toast.makeText(this, "MyLocation button clicked", Toast.LENGTH_SHORT).show();
 
         return false;
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+        Log.d(TAG, "onMarkerDragStart:"+marker.getPosition().latitude+"   ,    "+marker.getPosition().longitude);
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        Log.d(TAG, "onMarkerDragEnd:"+marker.getPosition().latitude+"   ,    "+marker.getPosition().longitude);
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
     }
 }

@@ -112,16 +112,16 @@ public abstract class LocationAwareActivity extends ActionBarActivity implements
 
     protected abstract void onEnableLocation();
 
-    protected abstract void onLocationUpdated(Task<Location> location);
+    protected abstract void onLocationUpdated(Location location);
 
     protected abstract void onAddressFound(String address);
 
-    protected void startLocationGeocoding(Task<Location> location) {
+    protected void startLocationGeocoding(Location location) {
 
         try{
 
-            if(location!=null && location.getResult()!=null)
-                (new GetAddressFromNetworkTask(this)).execute(location.getResult());
+            if(location!=null)
+                (new GetAddressFromNetworkTask(this)).execute(location);
 
         }catch (Exception e){
 
@@ -264,8 +264,8 @@ public abstract class LocationAwareActivity extends ActionBarActivity implements
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-        onLocationUpdated(currentLocation);
-        startLocationGeocoding(currentLocation);
+        //onLocationUpdated(currentLocation);
+        //startLocationGeocoding(currentLocation);
 
         if (mUpdatesRequested) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -319,8 +319,8 @@ public abstract class LocationAwareActivity extends ActionBarActivity implements
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
         if(currentLocation!=null){
-            onLocationUpdated(currentLocation);
-            startLocationGeocoding(currentLocation);
+            onLocationUpdated(location);
+            startLocationGeocoding(location);
         }
 
     }
@@ -542,9 +542,24 @@ public abstract class LocationAwareActivity extends ActionBarActivity implements
     }
 
     public BitmapDescriptor getMarkerIcon(String color) {
-        float[] hsv = new float[3];
-        Color.colorToHSV(Color.parseColor(color), hsv);
-        return BitmapDescriptorFactory.defaultMarker(hsv[0]);
+
+        try{
+
+            float[] hsv = new float[3];
+
+            Color.colorToHSV(Color.parseColor(color), hsv);
+
+            return BitmapDescriptorFactory.defaultMarker(hsv[0]);
+
+        }catch (Exception e){
+
+           // Log.d(TAG, "getMarkerIcon: ",e);
+
+        }
+
+        return null;
+
+
     }
 
     /**

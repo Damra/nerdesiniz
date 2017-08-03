@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity  {
 
         BTFirebase.getInstance(context);
 
+        //BTFirebase.getRooms().removeValue(); // tüm odaları temizle
+
         absActivity = new AbsActivity(this) {
             @Override
             void loadPropertyData() {
@@ -114,6 +116,7 @@ public class MainActivity extends AppCompatActivity  {
 
         }
 
+/*
         Person person = new Person();
 
         person.setDeviceId(DeviceInfo.getUDID(this));
@@ -121,6 +124,7 @@ public class MainActivity extends AppCompatActivity  {
         person.setName(etUserName.getText().toString());
 
         BTFirebase.registerUserToRoom(etRoomNumber.getText().toString(),person);
+*/
 
         createActivity();
 

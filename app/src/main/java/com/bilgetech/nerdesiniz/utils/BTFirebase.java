@@ -109,13 +109,13 @@ public class BTFirebase {
 
                 try{
 
-                    logdRefRec(dataSnapshot.getRef()); // filtered data
+                    //logdRefRec(dataSnapshot.getRef()); // filtered data
 
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
 
                         snapshot.getRef().removeValue();
 
-                        Log.d(TAG, "registerUserToRoom: roomNumber:"+roomNumber+":"+ deviceId);
+                        Log.d(TAG, "dropUserFromRoom: roomNumber:"+roomNumber+":"+ deviceId);
 
                     }
 
@@ -138,7 +138,8 @@ public class BTFirebase {
 
     public static void setCurrentUserLocation(String roomNumber, final Location location){
 
-        Query filteredData = BTFirebase.getRoom(roomNumber).orderByChild("deviceId").equalTo(DeviceInfo.getUDID(_context));
+        Query filteredData = BTFirebase.getRoom(roomNumber).orderByChild("deviceId")
+                .limitToFirst(1).equalTo(DeviceInfo.getUDID(_context));
 
         filteredData.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -146,7 +147,7 @@ public class BTFirebase {
 
                 try{
 
-                    logdRefRec(dataSnapshot.getRef()); // filtered data
+                    //logdRefRec(dataSnapshot.getRef()); // filtered data
 
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
 

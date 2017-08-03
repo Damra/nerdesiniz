@@ -25,13 +25,22 @@ public class Utils {
 
     public final static void map2log(Map<String,Long> map){
 
-        if(map!=null && map.entrySet()!=null)
+        if(map!=null && map.entrySet()!=null){
+
+            Log.d(TAG, "-------------BEGIN-------------------");
+            Log.d(TAG, "map2log: elem size:"+ map.size());
 
             for (Map.Entry<String, Long> entry : map.entrySet()) {
 
                 Log.d(TAG, "map2log: "+entry.getKey() + ": " + entry.getValue());
 
             }
+
+            //Integer sum = map.values().stream().mapToInt(i-> i.intValue()).sum();
+
+            Log.d(TAG, "-------------END-------------------");
+
+        }
 
     }
 
