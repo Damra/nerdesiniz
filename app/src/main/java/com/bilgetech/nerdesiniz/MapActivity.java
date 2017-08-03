@@ -253,21 +253,7 @@ public class MapActivity extends LocationAwareActivity implements
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                try{
-
-                    Log.d(TAG, "onChildRemoved: "+dataSnapshot.getValue());
-
-                    String deviceId = dataSnapshot.getRef().child("deviceId").toString();
-
-                    if (deviceId!=null)
-                        removeMarker(deviceId);
-
-
-                }catch (Exception e){
-
-                    Log.d(TAG, "onChildRemoved: ",e);
-
-                }
+                removeMarker(dataSnapshot);
 
             }
 
@@ -351,24 +337,38 @@ public class MapActivity extends LocationAwareActivity implements
 
     }
 
-    private synchronized void removeMarker(final String deviceId) {
+    private synchronized void removeMarker(final DataSnapshot ds) {
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        Gson gson = new Gson();
 
-                if(mMarkers.get(deviceId)!=null){
+        JsonElement jsonElement = gson.toJsonTree((Map)ds.getValue());
 
-                    final Marker marker = mMarkers.get(deviceId);
+        final Person person = gson.fromJson(jsonElement, Person.class);
 
-                    mMarkers.remove(deviceId);
+        if(person!=null && person.isCompleted() && person.getLocation()!=null){
 
-                    marker.remove();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    if(mMarkers.get(person.getDeviceId())!=null){
+
+                        final Marker marker = mMarkers.get(person.getDeviceId());
+
+                        mMarkers.remove(person.getDeviceId());
+
+                        marker.remove();
+
+                        Log.d(TAG, "run: marker removed");
+
+                    }
 
                 }
+            });
 
-            }
-        });
+        }
+
+
 
 
 
