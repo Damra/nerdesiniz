@@ -547,13 +547,13 @@ public abstract class LocationAwareActivity extends ActionBarActivity implements
 
             float[] hsv = new float[3];
 
-            Color.colorToHSV(Color.parseColor(color), hsv);
+            Color.colorToHSV(Color.parseColor("#"+color.trim()), hsv);
 
             return BitmapDescriptorFactory.defaultMarker(hsv[0]);
 
         }catch (Exception e){
 
-           // Log.d(TAG, "getMarkerIcon: ",e);
+            Log.d(TAG, "getMarkerIcon: "+"#"+color.trim(),e);
 
         }
 

@@ -294,6 +294,22 @@ public class MapActivity extends LocationAwareActivity implements
     }
 
     @Override
+    protected void onStop() {
+
+        BTFirebase.dropUserFromRoom(roomNumber, DeviceInfo.getUDID(this));
+
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+
+        BTFirebase.dropUserFromRoom(roomNumber, DeviceInfo.getUDID(this));
+
+        super.onDestroy();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -337,15 +353,24 @@ public class MapActivity extends LocationAwareActivity implements
 
     private synchronized void removeMarker(final String deviceId) {
 
-        if(mMarkers.get(deviceId)!=null){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
-            final Marker marker = mMarkers.get(deviceId);
+                if(mMarkers.get(deviceId)!=null){
 
-            mMarkers.remove(deviceId);
+                    final Marker marker = mMarkers.get(deviceId);
 
-            marker.remove();
+                    mMarkers.remove(deviceId);
 
-        }
+                    marker.remove();
+
+                }
+
+            }
+        });
+
+
 
     }
 
@@ -366,22 +391,17 @@ public class MapActivity extends LocationAwareActivity implements
 
                 Log.d(TAG, "onMapNewUserInteraction: "+"  ,"+ person.getDeviceId()+" "+person.isCompleted());
 
-                MarkerOptions markerOptions = new MarkerOptions()
-                        .position(newLocation)
-                        .title(person.getName());
-
                 MarkerOptions options = new MarkerOptions()
                         .position(newLocation)
-                        .icon(BitmapDescriptorFactory.defaultMarker())
                         .title(person.getName());
 
-                if (person.getColor().matches("^[0-9a-fA-F]+$")){
+                if (!person.getColor().equals("")){
 
                     options.icon(getMarkerIcon(person.getColor()));
 
                 }
 
-                addMarker(person.getDeviceId(),markerOptions);
+                addMarker(person.getDeviceId(),options);
 
             }
 
